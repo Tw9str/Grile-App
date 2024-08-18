@@ -17,7 +17,7 @@ export default function PortalButton({ user, token, children }) {
 
       if (response.ok) {
         const data = await response.json();
-        router.push(data.url);
+        window.open(data.url, "_blank");
       } else {
         console.error("Failed to create customer portal session");
       }
@@ -28,7 +28,7 @@ export default function PortalButton({ user, token, children }) {
 
   const onClickHandler = async () => {
     if (user?.plan === "free") {
-      router.push("/#plans");
+      router.push("/dashboard/plans");
     } else {
       await handleSubscriptionClick();
     }

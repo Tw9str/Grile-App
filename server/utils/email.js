@@ -1,30 +1,56 @@
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-  service: "Gmail", // You can use 'SendGrid' or other email services
+  host: "smtp.mail.ro",
+  port: 587,
+  secure: false,
   auth: {
-    user: process.env.EMAIL_USER, // Your email address
-    pass: process.env.EMAIL_PASS, // Your email password or app password
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+  tls: {
+    rejectUnauthorized: false,
   },
 });
 
-const sendEmail = (to, subject, html) => {
+const sendEmail = (
+  to,
+  subject,
+  html,
+  replyTo,
+  retryCount = 5,
+  delay = 5000
+) => {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to,
     subject,
     html,
+    replyTo: replyTo || process.env.EMAIL_USER,
   };
 
   return new Promise((resolve, reject) => {
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error("Error sending email:", error);
-        return reject(error);
-      }
-      console.log("Email sent: " + info.response);
-      resolve(info);
-    });
+    const attemptToSendEmail = (attempt) => {
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error(`Attempt ${attempt + 1} failed:`, error);
+
+          if (attempt < retryCount - 1) {
+            console.log(
+              `Retrying to send email... (${attempt + 1}/${retryCount})`
+            );
+            setTimeout(() => attemptToSendEmail(attempt + 1), delay);
+          } else {
+            console.error("All retry attempts failed.");
+            return reject(error);
+          }
+        } else {
+          resolve(info);
+        }
+      });
+    };
+
+    attemptToSendEmail(0);
   });
 };
 

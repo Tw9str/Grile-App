@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { setLogin } from "@/state/authSlice";
+import { setToken } from "@/state/authSlice";
 import { useDispatch } from "react-redux";
 import { MdiEye, MdiEyeOff } from "@/components/dashboard/Icons";
 
@@ -43,7 +43,7 @@ export default function Login() {
       const data = await response.json();
       setMessage(data.message);
       if (data.success) {
-        dispatch(setLogin(data));
+        dispatch(setToken(data));
       } else {
         setMessage(data.message || "Login failed. Please try again.");
       }
@@ -62,8 +62,10 @@ export default function Login() {
   return (
     <>
       <div className="mb-8 text-center">
-        <h1 className="text-gray-950 my-3 text-4xl font-bold">Sign in</h1>
-        <p className="text-gray-600 text-sm">Sign in to access your account</p>
+        <h1 className="text-gray-950 my-3 text-4xl font-bold">Autentificare</h1>
+        <p className="text-gray-600 text-sm">
+          Autentifică-te pentru a accesa contul tău
+        </p>
       </div>
       <form onSubmit={handleSubmit} className="space-y-10">
         <div className="space-y-4">
@@ -72,7 +74,7 @@ export default function Login() {
               htmlFor="username"
               className="text-gray-600 block mb-2 text-sm"
             >
-              Username
+              Nume de utilizator
             </label>
             <input
               type="text"
@@ -87,14 +89,14 @@ export default function Login() {
           <div>
             <div className="text-gray-600 flex justify-between mb-2">
               <label htmlFor="password" className="text-sm">
-                Password
+                Parolă
               </label>
               <Link
                 rel="noopener noreferrer"
-                href="/auth/reset-password"
+                href="/request-reset-password"
                 className="text-gray-950 text-xs hover:underline"
               >
-                Forgot password?
+                Ai uitat parola?
               </Link>
             </div>
             <div className="relative">
@@ -131,16 +133,13 @@ export default function Login() {
               }`}
               disabled={loading}
             >
-              {loading ? "Signing in..." : "Sign in"}
+              {loading ? "Autentificare..." : "Autentificare"}
             </button>
           </div>
           <p className="text-gray-600 px-6 text-sm text-center">
-            Nu ai inca un cont?{" "}
-            <Link
-              href="/auth/register"
-              className="text-gray-950 hover:underline"
-            >
-              Creaza unul
+            Nu ai încă un cont?{" "}
+            <Link href="/register" className="text-gray-950 hover:underline">
+              Creează unul
             </Link>
             !
           </p>

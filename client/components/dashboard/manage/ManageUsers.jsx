@@ -22,7 +22,7 @@ const ManageUsers = ({ users, onDelete, onPromote, onUpdate }) => {
   const handleConfirmDelete = async () => {
     if (userToDelete) {
       await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE}/api/users/${userToDelete}`,
+        `${process.env.NEXT_PUBLIC_API_BASE}/api/manage/user/delete/${userToDelete}`,
         {
           method: "DELETE",
           headers: {
@@ -30,7 +30,7 @@ const ManageUsers = ({ users, onDelete, onPromote, onUpdate }) => {
           },
         }
       );
-      onDelete(userToDelete); // Update parent state
+      onDelete(userToDelete);
       setShowOverlay(false);
       setUserToDelete(null);
     }
@@ -46,7 +46,7 @@ const ManageUsers = ({ users, onDelete, onPromote, onUpdate }) => {
     if (userToPromote) {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE}/api/users/promote/${userToPromote}`,
+          `${process.env.NEXT_PUBLIC_API_BASE}/api/manage/user/promote/${userToPromote}`,
           {
             method: "PATCH",
             headers: {
@@ -75,7 +75,7 @@ const ManageUsers = ({ users, onDelete, onPromote, onUpdate }) => {
   const updatePlan = async (userId, newPlan) => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE}/api/users/update/${userId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE}/api/manage/user/update/${userId}`,
         {
           method: "PATCH",
           headers: {
@@ -115,9 +115,9 @@ const ManageUsers = ({ users, onDelete, onPromote, onUpdate }) => {
         <tbody>
           {users.map((user) => (
             <tr key={user._id} className="border-b">
-              <td className="p-4">{user.username}</td>
-              <td className="p-4">{user.email}</td>
-              <td className="p-4">{user.role}</td>
+              <td className="p-4">{user?.username}</td>
+              <td className="p-4">{user?.email}</td>
+              <td className="p-4">{user?.role}</td>
               <td className="p-4">
                 <select
                   value={user.plan}

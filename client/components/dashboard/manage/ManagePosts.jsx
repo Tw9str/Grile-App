@@ -6,7 +6,7 @@ import { EditIcon, DeleteIcon } from "../Icons";
 import OverlayAlert from "@/components/widgets/OverlayAlert";
 import NoData from "@/components/shared/NoData";
 
-const ManagePosts = ({ posts, onDelete }) => {
+const ManagePosts = ({ posts, onDelete, onUpdate }) => {
   const token = useSelector((state) => state.auth.token);
   const [showOverlay, setShowOverlay] = useState(false);
   const [postToDelete, setPostToDelete] = useState(null);
@@ -19,7 +19,7 @@ const ManagePosts = ({ posts, onDelete }) => {
   const handleConfirm = async () => {
     if (postToDelete) {
       await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE}/api/posts/delete/${postToDelete}`,
+        `${process.env.NEXT_PUBLIC_API_BASE}/api/manage/post/delete/${postToDelete}`,
         {
           method: "DELETE",
           headers: {
@@ -40,7 +40,7 @@ const ManagePosts = ({ posts, onDelete }) => {
 
   const handleVisibilityChange = async (postId, newVisibility) => {
     await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE}/api/posts/edit/${postId}`,
+      `${process.env.NEXT_PUBLIC_API_BASE}/api/manage/post/edit/${postId}`,
       {
         method: "PUT",
         headers: {

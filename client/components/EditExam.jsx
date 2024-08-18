@@ -28,8 +28,8 @@ export default function EditExam({ exam, categories }) {
       ...q,
       correctAnswers: q.correctAnswers.map((answer) => parseInt(answer, 10)),
       imagePreview: q.image
-        ? `${process.env.NEXT_PUBLIC_API_BASE}/questions/${q.image}`
-        : null, // Assuming images are stored in a specific directory
+        ? `${process.env.NEXT_PUBLIC_API_BASE}/${q.image}`
+        : null,
     }));
     setQuestions(parsedQuestions);
   }, [exam]);
@@ -143,9 +143,9 @@ export default function EditExam({ exam, categories }) {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE}/api/exams/exam/edit/${exam._id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE}/api/create/exam/edit/${exam._id}`,
         {
-          method: "PUT",
+          method: "PATCH",
           headers: {
             Authorization: `Bearer ${token}`,
           },

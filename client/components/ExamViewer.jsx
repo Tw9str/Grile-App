@@ -51,24 +51,19 @@ export default function ExamViewer({ exam }) {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      const isWindows = navigator.platform.indexOf("Win") > -1;
-
-      // Prevent Print Screen (PrintScreen key on Windows)
       if (e.key === "PrintScreen") {
         e.preventDefault();
         document.body.style.filter = "blur(10px)";
         alert("Screenshots are not allowed!");
       }
 
-      // Prevent Ctrl + Shift + S (Snipping Tool)
       if (e.ctrlKey && e.shiftKey && e.key === "S") {
         e.preventDefault();
         document.body.style.filter = "blur(10px)";
         alert("Screenshots are not allowed!");
       }
 
-      // Prevent Windows Key + Shift + S (Snipping Tool on Windows)
-      if (isWindows && e.metaKey && e.shiftKey && e.key === "S") {
+      if (e.metaKey && e.shiftKey && e.key === "S") {
         e.preventDefault();
         document.body.style.filter = "blur(10px)";
         alert("Screenshots are not allowed!");
@@ -149,7 +144,7 @@ export default function ExamViewer({ exam }) {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             userId,
@@ -212,7 +207,7 @@ export default function ExamViewer({ exam }) {
               </div>
               {currentQuestion?.image && (
                 <Image
-                  src={`${process.env.NEXT_PUBLIC_API_BASE}/questions/${currentQuestion.image}`}
+                  src={`${process.env.NEXT_PUBLIC_API_BASE}/${currentQuestion.image}`}
                   width={800}
                   height={800}
                   alt="question"

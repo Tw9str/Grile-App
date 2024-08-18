@@ -3,21 +3,14 @@ const {
   getUsers,
   getUser,
   updateUserInfo,
-  updateUserPlan,
-  updateUserRole,
+  getPremiumUsers,
 } = require("../controllers/userController");
-const verifyRole = require("../middleware/auth");
 
 const router = express.Router();
 
 router.get("/", getUsers);
-router.get("/me", verifyRole(["student", "teacher", "admin"]), getUser);
-router.put(
-  "/updateUser",
-  verifyRole(["student", "teacher", "admin"]),
-  updateUserInfo
-);
-router.patch("/update/:id", updateUserPlan);
-router.patch("/promote/:id", verifyRole(["admin"]), updateUserRole);
+router.get("/me", getUser);
+router.get("/premium", getPremiumUsers);
+router.put("/updateUser", updateUserInfo);
 
 module.exports = router;

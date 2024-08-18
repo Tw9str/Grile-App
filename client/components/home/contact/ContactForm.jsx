@@ -4,44 +4,58 @@ import React, { useState } from "react";
 import ContactSvg from "./ContactSvg";
 
 const ContactForm = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
+  const [state, setState] = useState({
+    formData: {
+      name: "",
+      email: "",
+      message: "",
+    },
     message: "",
+    loading: false,
   });
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
+    setState((prevState) => ({
+      ...prevState,
+      formData: { ...prevState.formData, [name]: value },
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setMessage("");
+    setState((prevState) => ({ ...prevState, loading: true, message: "" }));
+
     try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE}/api/contact`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(state.formData),
+        }
+      );
 
       const data = await response.json();
-      if (data.success) {
-        setMessage("Thank you for your message! We'll get back to you soon.");
-        setFormData({ name: "", email: "", message: "" });
-      } else {
-        setMessage("An error occurred. Please try again later.");
-      }
+      setState((prevState) => ({
+        ...prevState,
+        message: data.success ? data.message : data.error,
+        formData: data.success
+          ? { name: "", email: "", message: "" }
+          : prevState.formData,
+        loading: false,
+      }));
     } catch (error) {
       console.error("Error submitting form", error);
-      setMessage("An error occurred. Please try again later.");
-    } finally {
-      setLoading(false);
+      setState((prevState) => ({
+        ...prevState,
+        message: "A apărut o eroare. Vă rugăm să încercați din nou mai târziu.",
+        loading: false,
+      }));
     }
   };
+
+  const { formData, message, loading } = state;
 
   return (
     <section
@@ -52,17 +66,16 @@ const ContactForm = () => {
         <h2 className="text-lg font-semibold p-2 w-fit mx-auto text-green-500">
           Contact
         </h2>
-        <p className="font-bold text-5xl mt-2">Contact Us </p>
+        <p className="font-bold text-5xl mt-2">Contactaţi-ne</p>
       </div>
       <div className="grid lg:grid-cols-2 gap-16 mt-10">
         <ContactSvg />
         <form className="space-y-8" onSubmit={handleSubmit}>
-          {/* Error Message */}
           {message && (
             <div className="text-center lg:text-left text-sm mb-4">
               <p
                 className={`text-${
-                  message.includes("Thank you") ? "green" : "red"
+                  message.includes("succes") ? "green" : "red"
                 }-500`}
               >
                 {message}
@@ -71,10 +84,9 @@ const ContactForm = () => {
           )}
 
           <div className="space-y-4">
-            {/* Name */}
             <div className="space-y-2">
               <label htmlFor="name" className="block text-sm text-gray-600">
-                Name
+                Nume
               </label>
               <input
                 type="text"
@@ -82,12 +94,11 @@ const ContactForm = () => {
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
-                placeholder="Your Name"
+                placeholder="Numele tău"
                 className="w-full px-3 py-2 border rounded-md focus:outline-green-500"
               />
             </div>
 
-            {/* Email */}
             <div className="space-y-2">
               <label htmlFor="email" className="block text-sm text-gray-600">
                 Email
@@ -98,22 +109,21 @@ const ContactForm = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                placeholder="Your Email"
+                placeholder="Email-ul tău"
                 className="w-full px-3 py-2 border rounded-md focus:outline-green-500"
               />
             </div>
 
-            {/* Message */}
             <div className="space-y-2">
               <label htmlFor="message" className="block text-sm text-gray-600">
-                Message
+                Mesaj
               </label>
               <textarea
                 id="message"
                 name="message"
                 value={formData.message}
                 onChange={handleInputChange}
-                placeholder="Your Message"
+                placeholder="Mesajul tău"
                 rows="5"
                 className="w-full px-3 py-2 border rounded-md focus:outline-green-500"
               ></textarea>
@@ -128,7 +138,7 @@ const ContactForm = () => {
               }`}
               disabled={loading}
             >
-              {loading ? "Sending..." : "Send Message"}
+              {loading ? "Se trimite..." : "Trimite mesajul"}
             </button>
           </div>
         </form>

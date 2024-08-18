@@ -1,8 +1,10 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Plan from "./Plan";
+import LoadingSpinner from "@/components/widgets/LoadingSpinner";
+import NoData from "@/components/shared/NoData"; // Make sure to import the NoData component
 
-export default function Plans() {
+export default function Plans({ reset }) {
   const [plans, setPlans] = useState([]);
   const [status, setStatus] = useState({ loading: true, error: null });
 
@@ -30,25 +32,15 @@ export default function Plans() {
   }, []);
 
   if (status.loading) {
-    return (
-      <div className="flex justify-center items-center h-48">
-        <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-16 w-16"></div>
-      </div>
-    );
-  }
-
-  if (status.error) {
-    return (
-      <div className="flex justify-center items-center h-48 text-red-600">
-        Error loading plans: {status.error}
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
     <section
       id="plans"
-      className="max-w-7xl mx-auto mt-20 pt-4 px-4 sm:px-6 md:px-8"
+      className={`max-w-7xl mx-auto ${
+        reset ? "" : "mt-20"
+      } pt-4 px-4 sm:px-6 md:px-8`}
     >
       <div className="mx-auto text-center">
         <h2 className="text-lg font-semibold p-2 w-fit mx-auto text-green-500">
@@ -59,14 +51,20 @@ export default function Plans() {
         </p>
       </div>
       <p className="text-center text-xl text-neutral-600 max-w-2xl mx-auto mt-4">
-        Partenerul tău pentru succes academic Noi transformăm învățarea usuara
+        Partenerul tău pentru succes academic. Noi transformăm învățarea ușoară
         în realitate.
       </p>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
-        {plans.map((plan) => (
-          <Plan key={plan._id} plan={plan} />
-        ))}
-      </div>
+      {plans.length === 0 ? (
+        <div className="flex justify-center mt-10">
+          <NoData description="No plans available" />
+        </div>
+      ) : (
+        <div className="w-fit mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
+          {plans.map((plan) => (
+            <Plan key={plan._id} plan={plan} />
+          ))}
+        </div>
+      )}
     </section>
   );
 }
